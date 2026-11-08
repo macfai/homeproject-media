@@ -90,17 +90,43 @@ h1{font-weight:500;font-size:clamp(40px,6vw,72px);line-height:1.02;letter-spacin
 .result b{font-weight:600}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--teal);margin-top:6px;flex:none}
 
-/* PANTALLA 3: antes / con */
-.rows .r{display:grid;grid-template-columns:200px 1fr;gap:20px;padding:18px 4px;border-top:1px solid var(--line)}
-.rows .r:first-child{border-top:0}
-@media(max-width:700px){.rows .r{grid-template-columns:1fr;gap:4px}}
-.when{font-weight:500}
-.when small{display:block;color:var(--muted);font-size:14px;font-weight:400}
-.rows p{font-size:17px}
-.rows .c{display:none}
-.rows.con .a{display:none}
-.rows.con .c{display:block}
-.rows .a{color:#8A3B2B}
+/* PANTALLA 3: sin / con (contraste) */
+.vs{margin-top:28px}
+.sw{position:relative;display:grid;grid-template-columns:1fr 1fr;background:var(--well);border-radius:999px;padding:6px;max-width:560px}
+.sw button{position:relative;z-index:1;border:0;background:none;height:52px;border-radius:999px;font:500 16px Inter,sans-serif;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px;transition:color .4s}
+.sw button i{width:9px;height:9px;border-radius:50%}
+#t-a i{background:#E5533D}#t-c i{background:var(--teal)}
+.sw .knob{position:absolute;top:6px;bottom:6px;left:6px;width:calc(50% - 6px);border-radius:999px;background:#141414;transition:transform .55s cubic-bezier(.7,0,.2,1),background .55s;overflow:hidden}
+.sw .knob b{position:absolute;left:0;bottom:0;height:3px;width:0;background:rgba(255,255,255,.55)}
+.vs.con .sw .knob{transform:translateX(100%);background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.vs.con .sw .knob b{background:var(--teal)}
+.vs:not(.con) #t-a{color:#fff}.vs.con #t-c{color:var(--ink)}
+.stage{margin-top:14px;border-radius:28px;padding:30px;background:#141414;color:#fff;transition:background .55s,color .55s;position:relative;overflow:hidden}
+.vs.con .stage{background:#fff;color:var(--ink);box-shadow:0 30px 60px -45px rgba(45,127,120,.6);outline:1.5px solid var(--teal);outline-offset:-1.5px}
+.stage .head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.stage .head h3{font-size:clamp(22px,2.6vw,30px);font-weight:500;letter-spacing:-.8px}
+.stage .head span{font-size:14px;opacity:.6}
+.stage .r{display:grid;grid-template-columns:190px 1fr auto;gap:18px;align-items:center;padding:16px 0;border-top:1px solid rgba(255,255,255,.12);transition:border-color .55s}
+.vs.con .stage .r{border-color:var(--line)}
+.stage .when{font-weight:500;font-size:15.5px}
+.stage .when small{display:block;opacity:.55;font-size:13.5px;font-weight:400}
+.stage .r p{font-size:16.5px;line-height:1.45}
+.stage .tag{font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.stage .a,.stage .c{animation:fade .45s ease both}
+.stage .tag.a{background:rgba(229,83,61,.16);color:#FF8A75}
+.stage .tag.c{background:#E3F2F0;color:var(--teal)}
+.stage .c{display:none}.vs.con .stage .a{display:none}.vs.con .stage .c{display:block}.vs.con .stage .tag.c{display:inline-flex}
+.stage .tot{margin-top:6px;padding:18px 20px;border-radius:18px;display:flex;align-items:center;gap:14px;font-size:17px}
+.stage .tot.a{background:rgba(229,83,61,.14);display:flex}
+.stage .tot.c{background:#FFF4CF}
+.vs:not(.con) .stage .tot.c,.vs.con .stage .tot.a{display:none}
+.stage .tot b{font-weight:600}
+.stage .big{font-size:34px;font-weight:600;letter-spacing:-1px;line-height:1;flex:none}
+.stage .tot.a .big{color:#FF8A75}.stage .tot.c .big{color:var(--teal)}
+.vs .hint2{font-size:14px;color:var(--muted);margin-top:12px}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(max-width:700px){.stage{padding:20px}.stage .r{grid-template-columns:1fr auto;gap:6px 12px}.stage .r p{grid-column:1/-1;grid-row:2}.sw button{font-size:14.5px;height:48px}.stage .big{font-size:30px}.stage .tot{flex-direction:column;align-items:flex-start;gap:6px;font-size:16px}.stage .head span{display:none}}
+@media (prefers-reduced-motion:reduce){.sw .knob,.stage,.stage .a,.stage .c{transition:none;animation:none}}
 
 /* PANTALLA 4: cómo + lo que hace */
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px}
@@ -257,21 +283,27 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   </div>
 </section>
 
-<!-- Pantalla 3: antes y con -->
+<!-- Pantalla 3: sin y con (dolores contra resultado) -->
 <section class="blk">
   <div class="wrap">
-    <h2 class="t">Las mismas llamadas, con y sin contestadora</h2>
-    <div class="well" style="margin-top:28px">
-      <div class="seg" role="tablist" aria-label="Comparar">
-        <button role="tab" aria-selected="true" id="t-a">Hoy</button>
-        <button role="tab" aria-selected="false" id="t-c">Con contestadora</button>
+    <h2 class="t">Cada llamada que no contesta es un cliente para otro</h2>
+    <p class="lead">La misma semana de su negocio, sin contestadora y con ella.</p>
+    <div class="vs" id="vs">
+      <div class="sw" role="tablist" aria-label="Comparar">
+        <span class="knob" aria-hidden="true"><b id="prog"></b></span>
+        <button role="tab" aria-selected="true" id="t-a"><i></i>Sin contestadora</button>
+        <button role="tab" aria-selected="false" id="t-c"><i></i>Con contestadora</button>
       </div>
-      <div class="panel rows" id="rows" aria-live="polite">
-        <div class="r"><div class="when">Martes, 7:40 pm<small>Usted está cenando</small></div><p class="a">Suena seis veces y cae al buzón. El cliente no deja mensaje y llama al siguiente de Google.</p><p class="c">Contesta al primer timbre. El cliente deja nombre y WhatsApp, y a las 7:42 usted ya tiene el aviso.</p></div>
-        <div class="r"><div class="when">Miércoles, 10:15 am<small>Usted está en una escalera</small></div><p class="a">Es una robollamada. Usted baja a contestar y pierde diez minutos.</p><p class="c">La grabación no elige idioma y la contestadora cuelga sola. Usted ni se entera.</p></div>
-        <div class="r"><div class="when">Domingo, 4:00 pm<small>Su día libre</small></div><p class="a">Un cliente nuevo llama tres veces. El lunes ya contrató a otro.</p><p class="c">Le atiende en español y el lunes usted lo llama sabiendo qué quiere.</p></div>
-        <div class="r"><div class="when">Fin de mes</div><p class="a">No sabe cuántos clientes llamaron ni cuántos se perdieron.</p><p class="c">Tiene la lista de cada llamada: quién, cuándo y qué quería.</p></div>
+      <div class="stage" aria-live="polite">
+        <div class="head"><h3 class="a">Así se le van los clientes</h3><h3 class="c">Así los guarda todos</h3><span class="a">Lo que pasa hoy</span><span class="c">Desde el primer día</span></div>
+        <div class="r"><div class="when">Martes, 7:40 pm<small>Usted está cenando</small></div><p class="a">Suena seis veces y cae al buzón. El cliente no deja mensaje y llama al siguiente de Google.</p><p class="c">Contesta al primer timbre. El cliente deja nombre y WhatsApp, y a las 7:42 usted ya tiene el aviso.</p><span class="tag a">✕ Cliente perdido</span><span class="tag c">✓ Cliente guardado</span></div>
+        <div class="r"><div class="when">Miércoles, 10:15 am<small>Usted está en una escalera</small></div><p class="a">Es una llamada de spam. Usted baja a contestar y pierde diez minutos de trabajo.</p><p class="c">La grabación no elige idioma y la contestadora cuelga sola. Usted ni se entera.</p><span class="tag a">✕ Tiempo perdido</span><span class="tag c">✓ Spam colgado</span></div>
+        <div class="r"><div class="when">Domingo, 4:00 pm<small>Su día libre</small></div><p class="a">Un cliente nuevo llama tres veces. El lunes ya contrató a otro.</p><p class="c">Le atiende en español y el lunes usted lo llama sabiendo qué quiere.</p><span class="tag a">✕ Venta perdida</span><span class="tag c">✓ Venta lista</span></div>
+        <div class="r"><div class="when">Fin de mes<small>Cuentas del negocio</small></div><p class="a">No sabe cuántos clientes llamaron ni cuántos se perdieron.</p><p class="c">Tiene la lista de cada llamada: quién, cuándo y qué quería.</p><span class="tag a">✕ A ciegas</span><span class="tag c">✓ Todo anotado</span></div>
+        <div class="tot a"><span class="big">0 de 3</span><span><b>clientes nuevos atendidos</b> esta semana, y diez minutos botados en spam.</span></div>
+        <div class="tot c"><span class="big">3 de 3</span><span><b>clientes con nombre y WhatsApp</b> en su correo, y cero llamadas de spam para usted.</span></div>
       </div>
+      <p class="hint2">Toque los botones para comparar.</p>
     </div>
   </div>
 </section>
@@ -385,10 +417,15 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     document.getElementById('formbox').classList.add('sent');
   });
 
-  /* antes / con */
-  var rows=document.getElementById('rows'), ta=document.getElementById('t-a'), tc=document.getElementById('t-c');
-  ta.onclick=function(){rows.classList.remove('con');ta.setAttribute('aria-selected',true);tc.setAttribute('aria-selected',false)};
-  tc.onclick=function(){rows.classList.add('con');tc.setAttribute('aria-selected',true);ta.setAttribute('aria-selected',false)};
+  /* sin / con: alterna sola hasta que la persona toque */
+  var vs=document.getElementById('vs'), ta=document.getElementById('t-a'), tc=document.getElementById('t-c'), pg=document.getElementById('prog');
+  function ver(con){vs.classList.toggle('con',con);ta.setAttribute('aria-selected',!con);tc.setAttribute('aria-selected',con)}
+  var auto=!matchMedia('(prefers-reduced-motion: reduce)').matches, visto=false, t0=0, DUR=5200;
+  function tick(ts){if(!auto)return;if(visto){if(!t0)t0=ts;var f=(ts-t0)/DUR;if(f>=1){ver(!vs.classList.contains('con'));t0=ts;f=0}pg.style.width=(f*100)+'%'}else{t0=0}requestAnimationFrame(tick)}
+  function parar(){auto=false;pg.style.width='0'}
+  ta.onclick=function(){parar();ver(false)}; tc.onclick=function(){parar();ver(true)};
+  if('IntersectionObserver' in window){new IntersectionObserver(function(e){visto=e[0].isIntersecting},{threshold:.15}).observe(vs)}else{visto=true}
+  requestAnimationFrame(tick);
 
   /* llamadas de ejemplo */
   var C={
