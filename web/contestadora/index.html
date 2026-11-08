@@ -210,6 +210,14 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .voice{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:12px;padding:8px 22px 8px 8px;background:#fff;border:1px solid var(--line);border-radius:999px;box-shadow:0 14px 40px -14px rgba(0,0,0,.35);font:500 17px Inter,sans-serif;color:var(--ink);cursor:pointer;text-decoration:none;white-space:nowrap}
 .voice i{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff 0,rgba(255,255,255,0) 34%),conic-gradient(from 200deg,var(--teal),var(--sky),var(--sun),#F4B6A6,var(--teal));animation:spin 14s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.voice em{display:none;font-style:normal;font-size:15px;background:#141414;color:#fff;border-radius:999px;padding:7px 14px;margin-left:4px}
+.voice.on em{display:inline-block}
+.voice.on i{animation:spin 3s linear infinite}
+.voice.hablando i{animation:spin 1.2s linear infinite,pulse .9s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.12)}}
+.vmsg{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:41;background:#141414;color:#fff;border-radius:14px;padding:10px 16px;font-size:14.5px;max-width:min(92vw,420px);text-align:center;display:none}
+.vmsg.show{display:block}
+
 @media (prefers-reduced-motion:reduce){.voice i{animation:none}}
 </style>
 </head>
@@ -399,9 +407,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 
 <footer><div class="wrap"><span>© 2026 MACFai LLC · Miami, Florida</span><span><a href="https://macfai.com/privacy">Privacidad</a> &nbsp; <a href="https://macfai.com/terms">Términos</a></span></div></footer>
 
-<button class="voice" id="voice" type="button"><i aria-hidden="true"></i>Hablar con ella</button>
-<elevenlabs-convai agent-id="agent_4001m6y7ts42fderpq04n0tfmpp0" style="display:none"></elevenlabs-convai>
-<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
+<button class="voice" id="voice" type="button" aria-live="polite"><i aria-hidden="true"></i><span id="vtxt">Hablar con ella</span><em id="vend">Colgar</em></button>
+<div class="vmsg" id="vmsg" role="status"></div>
 
 <script>
 (function(){
@@ -444,11 +451,28 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   document.querySelectorAll('#escuchar [role=tab]').forEach(function(t){t.onclick=function(){document.querySelectorAll('#escuchar [role=tab]').forEach(function(x){x.setAttribute('aria-selected',x===t)});load(t.dataset.id)}});
   load('contratista');
 
-  /* hablar con ella: abre la conversación de voz; si no carga, llama a la demo */
-  document.getElementById('voice').onclick=function(){
-    var w=document.querySelector('elevenlabs-convai'); if(w){w.style.display='';}
-    var b=w&&w.shadowRoot&&w.shadowRoot.querySelector('button');
-    if(b){b.click()}else{location.href='tel:+17866276800'}
+  /* hablar con ella: conversación de voz ahí mismo, en la página */
+  var AGENTE='agent_4001m6y7ts42fderpq04n0tfmpp0', vb=document.getElementById('voice'), vt=document.getElementById('vtxt'), vm=document.getElementById('vmsg'), conv=null, ocupado=false;
+  function aviso(t,ms){vm.innerHTML=t;vm.classList.add('show');clearTimeout(aviso.t);if(ms)aviso.t=setTimeout(function(){vm.classList.remove('show')},ms)}
+  function reset(){conv=null;ocupado=false;vb.classList.remove('on','hablando');vt.textContent='Hablar con ella'}
+  vb.onclick=async function(){
+    if(ocupado)return;
+    if(conv){ocupado=true;try{await conv.endSession()}catch(e){}reset();aviso('Gracias por probarla. ¿Le gustó? Pídala arriba en 1 minuto.',5000);return}
+    ocupado=true;vt.textContent='Conectando…';aviso('Permita el micrófono para hablar con ella.',4000);
+    try{
+      await navigator.mediaDevices.getUserMedia({audio:true});
+      var m=await import('https://cdn.jsdelivr.net/npm/@elevenlabs/client@1.28.0/+esm');
+      conv=await m.Conversation.startSession({agentId:AGENTE,connectionType:'websocket',
+        onConnect:function(){vb.classList.add('on');vt.textContent='La escucho';aviso('Hable normal, como si llamara a su negocio.',4000)},
+        onModeChange:function(x){var h=x&&x.mode==='speaking';vb.classList.toggle('hablando',h);vt.textContent=h?'Hablando…':'La escucho'},
+        onDisconnect:function(){reset()},
+        onError:function(){reset();aviso('No se pudo conectar. Llame a la demo: <a href="tel:+17866276800" style="color:#FFC93C">(786) 627-6800</a>',8000)}});
+      ocupado=false;
+    }catch(e){
+      reset();
+      var mic=e&&(e.name==='NotAllowedError'||e.name==='SecurityError');
+      aviso(mic?'Sin micrófono no puede hablar con ella. Actívelo o llame al <a href="tel:+17866276800" style="color:#FFC93C">(786) 627-6800</a>':'No se pudo conectar. Llame a la demo: <a href="tel:+17866276800" style="color:#FFC93C">(786) 627-6800</a>',8000);
+    }
   };
 })();
 </script>
