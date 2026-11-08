@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Contestadora MACFai</title>
+<title>MACFai Calls</title>
 <meta name="description" content="Contestadora con inteligencia artificial hecha en español para negocios de Miami. Atiende cuando usted no puede, cuelga el spam y le manda el cliente al momento.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,6 +29,7 @@ a{color:inherit}
 .top nav a{text-decoration:none}
 .top .btn{height:40px;padding:0 18px;font-size:15px}
 @media(max-width:820px){.top nav a:not(.btn){display:none}}
+.lang{height:40px;min-width:46px;border-radius:999px;border:1px solid var(--line);background:#fff;font:600 14px Inter,sans-serif;color:var(--ink);cursor:pointer;letter-spacing:.3px}
 
 /* PANTALLA 1: propuesta + formulario */
 .s1{min-height:calc(100svh - 64px);display:flex;align-items:center;padding:40px 0 56px}
@@ -48,7 +49,7 @@ h1{font-weight:500;font-size:clamp(40px,6vw,72px);line-height:1.02;letter-spacin
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
 .chips label{cursor:pointer}
 .chips input{position:absolute;opacity:0;pointer-events:none}
-.chips span{display:inline-block;padding:9px 15px;border-radius:999px;border:1px solid var(--line);background:var(--bg);font-size:15px}
+.chips span{display:inline-block;white-space:nowrap;padding:9px 15px;border-radius:999px;border:1px solid var(--line);background:var(--bg);font-size:15px}
 .chips input:checked+span{background:var(--ink);color:#fff;border-color:var(--ink)}
 .chips input:focus-visible+span{outline:2px solid var(--ink);outline-offset:2px}
 .form .btn{width:100%;margin-top:4px}
@@ -225,12 +226,13 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 
 <header class="top">
   <div class="wrap">
-    <a class="logo" href="#">MACFai <span>Contestadora</span></a>
+    <a class="logo" href="#">MACFai <span>Calls</span></a>
     <nav aria-label="Secciones">
       <a href="#escuchar">Escuchar</a>
       <a href="#como">Cómo funciona</a>
       <a href="#precios">Precios</a>
       <a class="btn dark" href="#empezar">Empezar</a>
+      <button class="lang" id="lang" type="button" aria-label="Change language to English">EN</button>
     </nav>
   </div>
 </header>
@@ -354,7 +356,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
         <a class="btn light" href="https://buy.stripe.com/28E28j3TN3ATdNt4GqeQM00" rel="noopener">Empezar 7 días gratis</a>
       </article>
       <article class="plan pick">
-        <div class="row1"><h3>Contestadora</h3><span class="tag">Recomendado</span></div>
+        <div class="row1"><h3>Pro</h3><span class="tag">Recomendado</span></div>
         <div class="price">$79<small> /mes</small></div><div class="calls">100 llamadas al mes</div>
         <ul><li>Todo lo del Básico</li><li>Número local de Miami</li><li>Lista de todas sus llamadas</li><li>Guion a la medida de su negocio</li></ul>
         <a class="btn dark" href="https://buy.stripe.com/4gMbITdun2wPfVB5KueQM01" rel="noopener">Empezar 7 días gratis</a>
@@ -362,7 +364,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
       <article class="plan">
         <div class="row1"><h3>Completo</h3></div>
         <div class="price">$149<small> /mes</small></div><div class="calls">250 llamadas al mes</div>
-        <ul><li>Todo lo de Contestadora</li><li>Pasa la llamada en vivo a usted o su equipo</li><li>Agenda citas en su Google Calendar</li><li>Personas VIP que entran directo</li></ul>
+        <ul><li>Todo lo del Pro</li><li>Pasa la llamada en vivo a usted o su equipo</li><li>Agenda citas en su Google Calendar</li><li>Personas VIP que entran directo</li></ul>
         <a class="btn light" href="https://buy.stripe.com/14A6ozbmf8Vd10H3CmeQM02" rel="noopener">Empezar 7 días gratis</a>
       </article>
     </div>
@@ -376,7 +378,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     <h2 class="t">Cómo se compara</h2>
     <div class="cmp">
       <table>
-        <thead><tr><th></th><th>Contestadora MACFai</th><th>Contestadoras con IA en EE. UU.</th><th>Recepcionista</th></tr></thead>
+        <thead><tr><th></th><th>MACFai Calls</th><th>Contestadoras con IA en EE. UU.</th><th>Recepcionista</th></tr></thead>
         <tbody>
           <tr><th>Español</th><td class="us">Hecha en español, voces latinas</td><td>En varias es una opción agregada; panel y soporte en inglés</td><td>Si contrata a alguien bilingüe</td></tr>
           <tr><th>Configuración</th><td class="us">La hacemos nosotros en 48 horas</td><td>Usted, desde un panel</td><td>Usted la entrena</td></tr>
@@ -419,7 +421,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     e.preventDefault();
     var d=new FormData(f), neg=(d.get('negocio')||'').trim(), wa=(d.get('whatsapp')||'').replace(/[^\d+]/g,'');
     if(!neg){f.negocio.focus();return;} if(wa.length<10){f.whatsapp.focus();return;}
-    var body={origen:'web',cliente:'macfaidemo',idioma:'español',nombre:neg,telefono_que_llamo:wa,contacto:wa,canal_preferido:'WhatsApp',motivo:'Formulario de la página. Tipo de negocio: '+d.get('tipo')};
+    var body={origen:'web',cliente:'macfaidemo',idioma:document.documentElement.lang==='en'?'inglés':'español',nombre:neg,telefono_que_llamo:wa,contacto:wa,canal_preferido:'WhatsApp',motivo:'Formulario de la página ('+(document.documentElement.lang==='en'?'en inglés':'en español')+'). Tipo de negocio: '+d.get('tipo')};
     if(RECEPTOR.indexOf('http')===0){fetch(RECEPTOR,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)}).catch(function(){});}
     document.getElementById('formbox').classList.add('sent');
   });
@@ -444,7 +446,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   var au=new Audio(), N=64, bars=[], el=document.getElementById('bars'), sc=document.getElementById('script');
   for(var i=0;i<N;i++){var b=document.createElement('i');b.style.height=(20+Math.abs(Math.sin(i*1.9)*.5+Math.sin(i*.37)*.4)*80)+'%';el.appendChild(b);bars.push(b);}
   function icon(p){document.getElementById('ico').setAttribute('d',p?'M7 5h4v14H7zM13 5h4v14h-4z':'M7 5v14l12-7z')}
-  var cur='contratista';function load(id){cur=id;au.pause();au.src='https://raw.githubusercontent.com/macfai/homeproject-media/main/web/contestadora/'+id+'.mp3?v=andrea2';icon(false);sc.innerHTML=C[id].l.map(function(x){return '<p><b>'+x[0]+'</b>'+x[1]+'</p>'}).join('');document.getElementById('res').innerHTML=C[id].r;bars.forEach(function(b){b.classList.remove('on')});document.getElementById('time').textContent='0:00';}
+  var cur='contratista';function load(id){cur=id;au.pause();au.src='https://raw.githubusercontent.com/macfai/homeproject-media/main/web/contestadora/'+id+'.mp3?v=andrea2';icon(false);sc.innerHTML=C[id].l.map(function(x){return '<p><b>'+((typeof LANG!=='undefined'&&LANG==='en')?JS.en.rol[x[0]]:x[0])+'</b>'+x[1]+'</p>'}).join('');document.getElementById('res').innerHTML=(typeof LANG!=='undefined'&&LANG==='en')?RES[id]:C[id].r;bars.forEach(function(b){b.classList.remove('on')});document.getElementById('time').textContent='0:00';}
   document.getElementById('play').onclick=function(){if(au.paused){au.play();icon(true)}else{au.pause();icon(false)}};
   au.ontimeupdate=function(){var f=au.duration?au.currentTime/au.duration:0,k=Math.round(f*N);bars.forEach(function(b,i){b.classList.toggle('on',i<k)});var t=Math.floor(au.currentTime);document.getElementById('time').textContent=Math.floor(t/60)+':'+String(t%60).padStart(2,'0');var ps=sc.querySelectorAll('p'),ts=TS[cur]||[],j=-1;for(var q=0;q<ts.length;q++){if(au.currentTime>=ts[q])j=q;}ps.forEach(function(p,i){p.classList.toggle('now',i===j)});if(j>=0&&ps[j]&&!au.paused){var top=ps[j].offsetTop-sc.offsetTop-20;if(Math.abs(sc.scrollTop-top)>30)sc.scrollTo({top:top,behavior:'smooth'})}};
   au.onended=function(){icon(false)};
@@ -454,26 +456,53 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   /* hablar con ella: conversación de voz ahí mismo, en la página */
   var AGENTE='agent_4001m6y7ts42fderpq04n0tfmpp0', vb=document.getElementById('voice'), vt=document.getElementById('vtxt'), vm=document.getElementById('vmsg'), conv=null, ocupado=false;
   function aviso(t,ms){vm.innerHTML=t;vm.classList.add('show');clearTimeout(aviso.t);if(ms)aviso.t=setTimeout(function(){vm.classList.remove('show')},ms)}
-  function reset(){conv=null;ocupado=false;vb.classList.remove('on','hablando');vt.textContent='Hablar con ella'}
+  function reset(){conv=null;ocupado=false;vb.classList.remove('on','hablando');vt.textContent=T('hablar')}
   vb.onclick=async function(){
     if(ocupado)return;
-    if(conv){ocupado=true;try{await conv.endSession()}catch(e){}reset();aviso('Gracias por probarla. ¿Le gustó? Pídala arriba en 1 minuto.',5000);return}
-    ocupado=true;vt.textContent='Conectando…';aviso('Permita el micrófono para hablar con ella.',4000);
+    if(conv){ocupado=true;try{await conv.endSession()}catch(e){}reset();aviso(T('gracias'),5000);return}
+    ocupado=true;vt.textContent=T('con');aviso(T('mic'),4000);
     try{
       await navigator.mediaDevices.getUserMedia({audio:true});
       var m=await import('https://cdn.jsdelivr.net/npm/@elevenlabs/client@1.28.0/+esm');
       conv=await m.Conversation.startSession({agentId:AGENTE,connectionType:'websocket',
-        onConnect:function(){vb.classList.add('on');vt.textContent='La escucho';aviso('Hable normal, como si llamara a su negocio.',4000)},
-        onModeChange:function(x){var h=x&&x.mode==='speaking';vb.classList.toggle('hablando',h);vt.textContent=h?'Hablando…':'La escucho'},
+        onConnect:function(){vb.classList.add('on');vt.textContent=T('esc');aviso(T('normal'),4000)},
+        onModeChange:function(x){var h=x&&x.mode==='speaking';vb.classList.toggle('hablando',h);vt.textContent=h?T('hab'):T('esc')},
         onDisconnect:function(){reset()},
-        onError:function(){reset();aviso('No se pudo conectar. Llame a la demo: <a href="tel:+17866276800" style="color:#FFC93C">(786) 627-6800</a>',8000)}});
+        onError:function(){reset();aviso(T('fallo')+'<a href="tel:+17866276800" style="color:#FFC93C">(786) 627-6800</a>',8000)}});
       ocupado=false;
     }catch(e){
       reset();
       var mic=e&&(e.name==='NotAllowedError'||e.name==='SecurityError');
-      aviso(mic?'Sin micrófono no puede hablar con ella. Actívelo o llame al <a href="tel:+17866276800" style="color:#FFC93C">(786) 627-6800</a>':'No se pudo conectar. Llame a la demo: <a href="tel:+17866276800" style="color:#FFC93C">(786) 627-6800</a>',8000);
+      aviso(mic?T('sinmic')+'<a href="tel:+17866276800" style="color:#FFC93C">(786) 627-6800</a>':T('fallo')+'<a href="tel:+17866276800" style="color:#FFC93C">(786) 627-6800</a>',8000);
     }
   };
+
+  /* idioma: español / inglés */
+  var EN={"MACFai Calls": "MACFai Calls", "Escuchar": "Listen", "Cómo funciona": "How it works", "Precios": "Pricing", "Empezar": "Get started", "Su negocio contesta siempre, aunque usted no pueda": "Your business always answers, even when you can't", "Una contestadora con inteligencia artificial que atiende en español y en inglés, cuelga el spam y le manda cada cliente al momento.": "An AI receptionist that answers in English and Spanish, hangs up on spam and sends you every customer right away.", "<b>Lista en 48 horas</b>, la instalamos nosotros": "<b>Live in 48 hours</b>, we set it up for you", "<b>Desde $39</b> al mes": "<b>From $39</b> a month", "<b>7 días</b> gratis": "<b>7 days</b> free", "Pida su contestadora": "Get your receptionist", "Le escribimos por WhatsApp hoy y en 48 horas está contestando. Desde $39 al mes, 7 días gratis.": "We text you on WhatsApp today, and in 48 hours it's answering your calls. From $39 a month, 7 days free.", "Contratista": "Contractor", "Taller": "Auto shop", "Salón": "Salon", "Oficina": "Office", "Otro": "Other", "Nombre del negocio": "Business name", "Su WhatsApp": "Your WhatsApp", "Quiero mi contestadora": "I want my receptionist", "¿Prefiere oírla primero?": "Want to hear it first?", "Llame al (786) 627-6800": "Call (786) 627-6800", "Listo, recibimos sus datos": "Done, we got your info", "Le escribimos por WhatsApp hoy mismo. Mientras tanto, escuche cómo atendería a sus clientes aquí abajo.": "We'll text you on WhatsApp today. Meanwhile, hear how it would answer your customers below.", "Escuche cómo atiende a sus clientes": "Hear how it answers your customers", "Taller · English": "Auto shop · English", "Llamada de ejemplo": "Sample call", "Cada llamada que no contesta es un cliente para otro": "Every call you miss is a customer for someone else", "La misma semana de su negocio, sin contestadora y con ella.": "The same week at your business, without MACFai Calls and with it.", "<i></i>Sin contestadora": "<i></i>Without it", "<i></i>Con contestadora": "<i></i>With MACFai Calls", "Así se le van los clientes": "This is how customers slip away", "Así los guarda todos": "This is how you keep them all", "Lo que pasa hoy": "What happens today", "Desde el primer día": "From day one", "Martes, 7:40 pm<small>Usted está cenando</small>": "Tuesday, 7:40 pm<small>You're having dinner</small>", "Suena seis veces y cae al buzón. El cliente no deja mensaje y llama al siguiente de Google.": "It rings six times and goes to voicemail. The customer leaves no message and calls the next result on Google.", "Contesta al primer timbre. El cliente deja nombre y WhatsApp, y a las 7:42 usted ya tiene el aviso.": "Answered on the first ring. The customer leaves a name and WhatsApp, and by 7:42 you already have the alert.", "✕ Cliente perdido": "✕ Customer lost", "✓ Cliente guardado": "✓ Customer saved", "Miércoles, 10:15 am<small>Usted está en una escalera</small>": "Wednesday, 10:15 am<small>You're up on a ladder</small>", "Es una llamada de spam. Usted baja a contestar y pierde diez minutos de trabajo.": "It's a spam call. You climb down to answer and lose ten minutes of work.", "La grabación no elige idioma y la contestadora cuelga sola. Usted ni se entera.": "The robocall never picks a language, so it hangs up on its own. You never even notice.", "✕ Tiempo perdido": "✕ Time wasted", "✓ Spam colgado": "✓ Spam blocked", "Domingo, 4:00 pm<small>Su día libre</small>": "Sunday, 4:00 pm<small>Your day off</small>", "Un cliente nuevo llama tres veces. El lunes ya contrató a otro.": "A new customer calls three times. By Monday they've hired someone else.", "Le atiende en español y el lunes usted lo llama sabiendo qué quiere.": "It answers in their language, and on Monday you call back knowing exactly what they need.", "✕ Venta perdida": "✕ Sale lost", "✓ Venta lista": "✓ Sale ready", "Fin de mes<small>Cuentas del negocio</small>": "End of month<small>Running the numbers</small>", "No sabe cuántos clientes llamaron ni cuántos se perdieron.": "You don't know how many customers called or how many you lost.", "Tiene la lista de cada llamada: quién, cuándo y qué quería.": "You have a list of every call: who, when and what they wanted.", "✕ A ciegas": "✕ Flying blind", "✓ Todo anotado": "✓ All on record", "0 de 3": "0 of 3", "3 de 3": "3 of 3", "<b>clientes nuevos atendidos</b> esta semana, y diez minutos botados en spam.": "<b>new customers answered</b> this week, plus ten minutes wasted on spam.", "<b>clientes con nombre y WhatsApp</b> en su correo, y cero llamadas de spam para usted.": "<b>customers with name and WhatsApp</b> in your inbox, and zero spam calls for you.", "Toque los botones para comparar.": "Tap the buttons to compare.", "La contestadora atiende. Usted cierra la venta.": "It answers. You close the sale.", "Usted no instala nada": "You don't install anything", "<b>Nos cuenta su negocio</b><span>Por WhatsApp, en diez minutos.</span>": "<b>Tell us about your business</b><span>On WhatsApp, in ten minutes.</span>", "<b>La prueba usted primero</b><span>En 48 horas está lista. La llama y nos dice qué cambiar.</span>": "<b>You test it first</b><span>It's ready in 48 hours. Call it and tell us what to change.</span>", "<b>Empieza a recibir clientes</b><span>Con un número nuevo o desviando el suyo.</span>": "<b>Start getting customers</b><span>With a new number or by forwarding yours.</span>", "Qué hace en cada llamada": "What it does on every call", "<b>Habla como su cliente</b><span>Voces latinas, de usted. Si prefiere inglés, sigue en inglés.</span>": "<b>Speaks your customer's language</b><span>Natural English and Spanish. It switches the moment the caller does.</span>", "<b>Cuelga el spam sola</b><span>Las grabaciones se cortan en segundos y no se cobran.</span>": "<b>Hangs up on spam</b><span>Robocalls are cut off in seconds and never billed.</span>", "<b>Le avisa al instante</b><span>Correo con nombre, teléfono, mensaje y botón de WhatsApp. Aunque cuelguen a mitad.</span>": "<b>Alerts you instantly</b><span>An email with name, phone, message and a WhatsApp button. Even if they hang up midway.</span>", "Precio por llamada, sin sorpresas": "Priced per call, no surprises", "Instalación incluida, sin contrato y 7 días gratis. El spam que la contestadora cuelga no se cobra.": "Setup included, no contract and 7 days free. Spam it hangs up on is never billed.", "Básico": "Basic", "/mes": "/mo", "40 llamadas al mes": "40 calls a month", "Contesta 24/7 en español e inglés": "Answers 24/7 in English and Spanish", "Cuelga el spam sola": "Hangs up on spam", "Aviso por correo con WhatsApp": "Email alert with WhatsApp button", "Usa su número de siempre": "Keeps your current number", "Empezar 7 días gratis": "Start 7 days free", "Pro": "Pro", "Recomendado": "Recommended", "100 llamadas al mes": "100 calls a month", "Todo lo del Básico": "Everything in Basic", "Número local de Miami": "Local Miami number", "Lista de todas sus llamadas": "Log of all your calls", "Guion a la medida de su negocio": "Script tailored to your business", "Completo": "Complete", "250 llamadas al mes": "250 calls a month", "Todo lo del Pro": "Everything in Pro", "Pasa la llamada en vivo a usted o su equipo": "Live transfer to you or your team", "Agenda citas en su Google Calendar": "Books appointments in your Google Calendar", "Personas VIP que entran directo": "VIP callers ring straight through", "Llamada extra: $0.60. La prueba de 7 días pide tarjeta; puede cancelar antes del primer cobro.": "Extra call: $0.60. The 7-day trial requires a card; cancel anytime before the first charge.", "Cómo se compara": "How it compares", "Contestadoras con IA en EE. UU.": "Other AI receptionists in the US", "Recepcionista": "Human receptionist", "Español": "Spanish", "Hecha en español, voces latinas": "Built in Spanish, native Latino voices", "En varias es una opción agregada; panel y soporte en inglés": "Often an add-on; dashboard and support in English only", "Si contrata a alguien bilingüe": "Only if you hire someone bilingual", "Configuración": "Setup", "La hacemos nosotros en 48 horas": "We do it for you in 48 hours", "Usted, desde un panel": "You do it, from a dashboard", "Usted la entrena": "You train them", "Probar antes": "Try before you buy", "Línea de demo y 7 días gratis": "Demo line and 7 days free", "Prueba gratis en algunas": "Free trial on some", "Precio": "Price", "Desde $39 al mes": "From $39 a month", "De unos $25 a $300 al mes": "About $25 to $300 a month", "Unos $3,000 al mes o más": "About $3,000 a month or more", "Precios y funciones publicados por servicios de recepcionista con IA en EE. UU., revisados en noviembre de 2026.": "Prices and features as published by US AI receptionist services, reviewed November 2026.", "¿Tengo que cambiar mi número?": "Do I have to change my number?", "No. Le damos un número local nuevo, o deja el suyo y desvía a la contestadora las llamadas que no contesta.": "No. We give you a new local number, or you keep yours and forward the calls you can't answer.", "¿El cliente sabe que es una contestadora?": "Will callers know it's AI?", "Habla con voz natural, como una recepcionista, pero no se hace pasar por una persona. Su trabajo es tomar el recado o pasarle la llamada.": "It speaks naturally, like a receptionist, but never pretends to be a person. Its job is to take the message or pass you the call.", "¿Da precios o agenda citas por mí?": "Does it quote prices or book appointments for me?", "No da precios ni promete nada en su nombre. En el plan Completo agenda citas en su Google Calendar, en los horarios que usted deje libres.": "It never quotes prices or promises anything on your behalf. On the Complete plan it books appointments in your Google Calendar, only in the slots you leave open.", "¿Cómo cancelo?": "How do I cancel?", "Desde el link de pago o escribiéndonos por WhatsApp. No hay contrato.": "From your payment link or by texting us on WhatsApp. No contract.", "Deje de perder clientes por no contestar": "Stop losing customers to missed calls", "Se la dejamos lista en 48 horas.": "We'll have it live in 48 hours.", "Pedir mi contestadora": "Get my receptionist", "Privacidad": "Privacy", "Términos": "Terms"};
+  var JS={es:{rol:{Contestadora:'Contestadora',Cliente:'Cliente'},hablar:'Hablar con ella',con:'Conectando…',esc:'La escucho',hab:'Hablando…',col:'Colgar',
+      mic:'Permita el micrófono para hablar con ella.',normal:'Hable normal, como si llamara a su negocio.',gracias:'Gracias por probarla. ¿Le gustó? Pídala arriba en 1 minuto.',
+      fallo:'No se pudo conectar. Llame a la demo: ',sinmic:'Sin micrófono no puede hablar con ella. Actívelo o llame al ',btn:'EN',aria:'Change language to English',
+      desc:'Recepcionista con inteligencia artificial en español e inglés para negocios de Miami. Atiende cuando usted no puede, cuelga el spam y le manda el cliente al momento.'},
+    en:{rol:{Contestadora:'Receptionist',Cliente:'Caller'},hablar:'Talk to her',con:'Connecting…',esc:'Listening',hab:'Speaking…',col:'Hang up',
+      mic:'Allow the microphone to talk to her.',normal:'Talk normally, as if you were calling your business.',gracias:'Thanks for trying it. Like it? Sign up above in 1 minute.',
+      fallo:'Could not connect. Call the demo: ',sinmic:'She needs your microphone. Turn it on or call ',btn:'ES',aria:'Cambiar a español',
+      desc:'AI receptionist in English and Spanish for Miami businesses. Answers when you can\'t, hangs up on spam and sends you every customer instantly.'}};
+  var RES={contratista:'<b>Alert for you:</b> Rolando · 4210 W 12 Ave, Hialeah 33012 · WhatsApp · roof leak',taller:'<b>Alert for you:</b> Marisol · 2018 Corolla · noise when braking · WhatsApp · handled in English',salon:'<b>On your calendar:</b> Saturday 10:00 am · color and cut (Complete plan)'};
+  var LANG='es'; try{LANG=localStorage.getItem('lang')||''}catch(e){}
+  var q=(location.search.match(/[?&]lang=(en|es)/)||[])[1]; if(q)LANG=q; if(LANG!=='en'&&LANG!=='es')LANG=/^en/i.test(navigator.language||'')?'en':'es';
+  var SEL='title,h1,h2,h3,p,li,th,td,summary,a,button,label>span,.chips span,.when,.calls,.price small,.tag,.big,.tot>span:last-child,.head span,.proof span,.alt span,#who';
+  function idioma(l){LANG=l;document.documentElement.lang=l;
+    document.querySelectorAll(SEL).forEach(function(e){if(e.closest('#script,#res,.voice'))return;if(e.dataset.es===undefined){var h=e.innerHTML.trim();if(!EN[h])return;e.dataset.es=h}e.innerHTML=l==='en'?EN[e.dataset.es]:e.dataset.es});
+    var t=JS[l];document.getElementById('lang').textContent=t.btn;document.getElementById('lang').setAttribute('aria-label',t.aria);
+    document.querySelector('meta[name=description]').setAttribute('content',t.desc);
+    if(!conv)vt.textContent=t.hablar; document.getElementById('vend').textContent=t.col;
+    if(typeof load==='function')load(cur);
+    try{localStorage.setItem('lang',l)}catch(e){}}
+  function T(k){return JS[LANG][k]}
+  document.getElementById('lang').onclick=function(){idioma(LANG==='en'?'es':'en')};
+  idioma(LANG);
+  if(LANG==='en'){var tb=document.querySelector('[data-id=taller]');if(tb)tb.click()}
+  document.getElementById('lang').addEventListener('click',function(){var tb=document.querySelector('[data-id='+(LANG==='en'?'taller':'contratista')+']');if(tb&&au.paused)tb.click()});
 })();
 </script>
 </body>
