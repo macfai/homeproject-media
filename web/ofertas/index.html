@@ -37,6 +37,8 @@ dialog::backdrop{background:rgba(6,20,55,.82)}
 .tienda{background:var(--azul)} .whats{background:var(--wa)} .pagar{background:var(--rojo)}
 .cerrar{position:absolute;top:8px;right:8px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.95);color:var(--navy);font:800 22px var(--font);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .rel{position:relative}
+.compartir{position:fixed;left:calc(14px + env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom));background:var(--navy);color:#fff;border:0;font:800 15px var(--font);padding:13px 18px;border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,.25);cursor:pointer}
+.aviso{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--navy);color:#fff;font:700 14px var(--font);padding:10px 16px;border-radius:12px}
 .wa-fijo{position:fixed;right:calc(14px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));background:var(--wa);color:#fff;text-decoration:none;font-weight:800;font-size:15px;padding:13px 18px;border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,.25)}
 @media (prefers-reduced-motion:reduce){button.combo{transition:none}}
 </style>
@@ -52,6 +54,8 @@ dialog::backdrop{background:rgba(6,20,55,.82)}
     <button type="button" id="cotizar">Pedir cotización por WhatsApp</button>
   </section>
 </main>
+<button class="compartir" type="button" id="compartir">Compartir</button>
+<div class="aviso" id="aviso" hidden>Enlace copiado</div>
 <a class="wa-fijo" href="https://wa.me/17869526500?text=Hola%2C%20quiero%20informaci%C3%B3n%20de%20los%20combos%20de%20ACUBAVA" target="_blank" rel="noopener">WhatsApp</a>
 
 <dialog id="vista" aria-label="Combo">
@@ -103,6 +107,13 @@ vista.addEventListener("close", () => history.replaceState(null, "", location.pa
 document.getElementById("cotizar").onclick = () => {
   const t = document.getElementById("pedido").value.trim();
   window.open(wa(`Hola, quiero que me coticen un combo para La Habana${t ? ": " + t : "."}`), "_blank");
+};
+// Compartir: siempre manda el enlace del catálogo completo
+document.getElementById("compartir").onclick = async () => {
+  const url = location.origin + "/", texto = "Combos ACUBAVA con entrega en La Habana. Escoja el suyo aquí:";
+  if (navigator.share) { try { await navigator.share({title: "Ofertas ACUBAVA", text: texto, url}); return; } catch (e) { if (e.name === "AbortError") return; } }
+  try { await navigator.clipboard.writeText(url); const a = document.getElementById("aviso"); a.hidden = false; setTimeout(() => a.hidden = true, 2200); }
+  catch { window.open("https://wa.me/?text=" + encodeURIComponent(texto + " " + url), "_blank"); }
 };
 const h = location.hash.slice(1), c = COMBOS.find(x => x[0] === h); if (c) abrir(c);
 </script>
