@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ofertas ACUBAVA</title>
+<meta name="description" content="Combos de comida y aseo con entrega en La Habana. Pague aquí y lo reciben en casa.">
+<meta property="og:title" content="Ofertas ACUBAVA — Combos con entrega en La Habana">
+<meta property="og:description" content="Escoja su combo y pídalo por WhatsApp o en acubava.com.">
+<meta property="og:image" content="https://raw.githubusercontent.com/macfai/homeproject-media/main/web/ofertas/img/combo_familiar_esencial.jpg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap">
+<style>
+:root{--azul:#1660de;--navy:#0b2a6e;--wa:#1fa855;--rojo:#d8131c;--amarillo:#ffd23b;--line:#dce7f8;--font:'Poppins','Segoe UI',system-ui,sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;font-family:var(--font);color:var(--navy)}
+main{max-width:1180px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 110px max(12px,env(safe-area-inset-left));
+  background:radial-gradient(900px 380px at 0% 0%,#e6f0ff 0,transparent 60%),radial-gradient(900px 380px at 100% 100%,#e6f0ff 0,transparent 60%)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+@media (max-width:560px){.grid{grid-template-columns:1fr 1fr;gap:10px}}
+button.combo{all:unset;cursor:pointer;display:block;border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(11,42,110,.14);border:1px solid var(--line);background:#fff;transition:transform .15s}
+button.combo:hover{transform:translateY(-3px)}
+button.combo:focus-visible{outline:4px solid var(--amarillo);outline-offset:2px}
+button.combo img{display:block;width:100%;aspect-ratio:2/3;object-fit:cover}
+/* cotizar */
+.cotiza{margin-top:22px;border-radius:18px;padding:20px;background:linear-gradient(135deg,var(--navy),var(--azul));color:#fff;display:grid;gap:10px}
+.cotiza h2{margin:0;font-size:clamp(20px,4.5vw,26px);line-height:1.2;text-wrap:balance}
+.cotiza p{margin:0;opacity:.92;font-size:14px}
+.cotiza textarea{width:100%;min-height:90px;border:0;border-radius:12px;padding:12px;font:500 15px var(--font);color:var(--navy);resize:vertical}
+.cotiza button{border:0;border-radius:12px;padding:14px;background:var(--amarillo);color:var(--navy);font:800 16px var(--font);cursor:pointer}
+/* ampliado */
+dialog{border:0;padding:0;background:transparent;max-width:min(560px,94vw);width:100%}
+dialog::backdrop{background:rgba(6,20,55,.82)}
+.caja{background:#fff;border-radius:18px;overflow:hidden;max-height:92vh;display:flex;flex-direction:column}
+.caja img{width:100%;max-height:68vh;object-fit:contain;background:#fff}
+.acciones{display:grid;gap:8px;padding:12px}
+.acciones a{display:flex;justify-content:center;align-items:center;text-decoration:none;font:800 15px var(--font);padding:13px;border-radius:12px;color:#fff}
+.tienda{background:var(--azul)} .whats{background:var(--wa)} .pagar{background:var(--rojo)}
+.cerrar{position:absolute;top:8px;right:8px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.95);color:var(--navy);font:800 22px var(--font);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.rel{position:relative}
+.wa-fijo{position:fixed;right:calc(14px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));background:var(--wa);color:#fff;text-decoration:none;font-weight:800;font-size:15px;padding:13px 18px;border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+@media (prefers-reduced-motion:reduce){button.combo{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="grid" id="lista"></div>
+  <section class="cotiza" aria-labelledby="t-cotiza">
+    <h2 id="t-cotiza">¿No encuentra el combo que busca?</h2>
+    <p>Díganos qué quiere mandar y le armamos un combo a su medida con precio.</p>
+    <label for="pedido" style="position:absolute;left:-9999px">Qué quiere en su combo</label>
+    <textarea id="pedido" placeholder="Ejemplo: pollo, arroz, aceite, café y jabón para 4 personas"></textarea>
+    <button type="button" id="cotizar">Pedir cotización por WhatsApp</button>
+  </section>
+</main>
+<a class="wa-fijo" href="https://wa.me/17869526500?text=Hola%2C%20quiero%20informaci%C3%B3n%20de%20los%20combos%20de%20ACUBAVA" target="_blank" rel="noopener">WhatsApp</a>
+
+<dialog id="vista" aria-label="Combo">
+  <div class="caja rel">
+    <button class="cerrar" type="button" id="cerrar" aria-label="Cerrar">×</button>
+    <img id="v-img" alt="">
+    <div class="acciones" id="v-acc"></div>
+  </div>
+</dialog>
+
+<script>
+const WA = "17869526500";
+const IMG = "https://raw.githubusercontent.com/macfai/homeproject-media/main/web/ofertas/img/";
+// [id, nombre, precio, imagen, producto en acubava.com, link de pago directo (Stripe) cuando exista]
+const COMBOS = [
+  ["cafe-con-leche","Café con leche","17.50","combo_cafe_con_leche","cafe-con-leche-acubava",""],
+  ["despensa-esencial","Despensa Esencial","15.99","combo_despensa_esencial","despensa-esencial",""],
+  ["pollo-y-aceite","Pollo y aceite","17.50","combo_pollo_y_aceite","pollo-y-aceite",""],
+  ["proteina-basica","Proteína Básica","33.65","combo_proteina_basica","proteina-basica",""],
+  ["de-aseo","Combo de aseo","14.99","combo_de_aseo","",""],
+  ["de-latas","Combo de latas","24.99","combo_de_latas","",""],
+  ["familiar-basico","Familiar Básico","39.99","combo_familiar_basico","basico",""],
+  ["familiar-esencial","Familiar Esencial","64.99","combo_familiar_esencial","familiar-esencial",""],
+  ["mayorista","Mayorista","159.99","combo_mayorista","",""],
+];
+const wa = t => `https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
+const lista = document.getElementById("lista"), vista = document.getElementById("vista");
+function abrir(c){
+  const [id, nombre, precio, img, slug, pago] = c;
+  document.getElementById("v-img").src = IMG + img + ".jpg";
+  document.getElementById("v-img").alt = `Combo ${nombre} ACUBAVA, $${precio} USD`;
+  const acc = document.getElementById("v-acc"); acc.innerHTML = "";
+  const btn = (cls, txt, href) => { const a = document.createElement("a"); a.className = cls; a.textContent = txt; a.href = href; a.target = "_blank"; a.rel = "noopener"; acc.appendChild(a); };
+  if (pago) btn("pagar", "Pagar ahora con tarjeta", pago);
+  if (slug) btn("tienda", "Comprar en la tienda", `https://acubava.com/products/${slug}`);
+  btn("whats", "Escribir por WhatsApp", wa(`Hola, quiero el combo ${nombre} de $${precio} para La Habana.`));
+  history.replaceState(null, "", "#" + id);
+  vista.showModal();
+}
+for (const c of COMBOS){
+  const b = document.createElement("button"); b.className = "combo"; b.type = "button";
+  b.setAttribute("aria-label", `Ver combo ${c[1]}, $${c[2]}`);
+  b.innerHTML = `<img src="${IMG}${c[3]}.jpg" alt="Combo ${c[1]} ACUBAVA, $${c[2]} USD" loading="lazy">`;
+  b.addEventListener("click", () => abrir(c)); lista.appendChild(b);
+}
+document.getElementById("cerrar").onclick = () => vista.close();
+vista.addEventListener("click", e => { if (e.target === vista) vista.close(); });
+vista.addEventListener("close", () => history.replaceState(null, "", location.pathname));
+document.getElementById("cotizar").onclick = () => {
+  const t = document.getElementById("pedido").value.trim();
+  window.open(wa(`Hola, quiero que me coticen un combo para La Habana${t ? ": " + t : "."}`), "_blank");
+};
+const h = location.hash.slice(1), c = COMBOS.find(x => x[0] === h); if (c) abrir(c);
+</script>
+</body>
+</html>
