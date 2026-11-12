@@ -81,7 +81,15 @@ const COMBOS = [
   ["familiar-esencial","Familiar Esencial","64.99","combo_familiar_esencial","familiar-esencial",""],
   ["mayorista","Mayorista","159.99","combo_mayorista","",""],
 ];
-const wa = t => `https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
+// Código del vendedor: llega en el enlace (?v=CODIGO) y se guarda 60 días en este teléfono
+let V = "";
+try {
+  const q = (new URLSearchParams(location.search).get("v") || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);
+  if (q) { V = q; localStorage.setItem("acubava_v", JSON.stringify({v: q, t: Date.now()})); }
+  else { const s = JSON.parse(localStorage.getItem("acubava_v") || "null"); if (s && Date.now() - s.t < 60 * 864e5) V = s.v; }
+} catch (e) {}
+const wa = t => `https://wa.me/${WA}?text=${encodeURIComponent(t + (V ? ` (Código ${V})` : ""))}`;
+document.querySelector(".wa-fijo").href = wa("Hola, quiero información de los combos de ACUBAVA");
 const lista = document.getElementById("lista"), vista = document.getElementById("vista");
 function abrir(c){
   const [id, nombre, precio, img, slug, pago] = c;
@@ -90,9 +98,9 @@ function abrir(c){
   const acc = document.getElementById("v-acc"); acc.innerHTML = "";
   const btn = (cls, txt, href) => { const a = document.createElement("a"); a.className = cls; a.textContent = txt; a.href = href; a.target = "_blank"; a.rel = "noopener"; acc.appendChild(a); };
   if (pago) btn("pagar", "Pagar ahora con tarjeta", pago);
-  if (slug) btn("tienda", "Comprar en la tienda", `https://acubava.com/products/${slug}`);
+  if (slug && !V) btn("tienda", "Comprar en la tienda", `https://acubava.com/products/${slug}`);
   btn("whats", "Escribir por WhatsApp", wa(`Hola, quiero el combo ${nombre} de $${precio} para La Habana.`));
-  history.replaceState(null, "", "#" + id);
+  history.replaceState(null, "", location.pathname + location.search + "#" + id);
   vista.showModal();
 }
 for (const c of COMBOS){
@@ -103,14 +111,14 @@ for (const c of COMBOS){
 }
 document.getElementById("cerrar").onclick = () => vista.close();
 vista.addEventListener("click", e => { if (e.target === vista) vista.close(); });
-vista.addEventListener("close", () => history.replaceState(null, "", location.pathname));
+vista.addEventListener("close", () => history.replaceState(null, "", location.pathname + location.search));
 document.getElementById("cotizar").onclick = () => {
   const t = document.getElementById("pedido").value.trim();
   window.open(wa(`Hola, quiero que me coticen un combo para La Habana${t ? ": " + t : "."}`), "_blank");
 };
-// Compartir: siempre manda el enlace del catálogo completo
+// Compartir: manda el catálogo completo con el mismo código de vendedor
 document.getElementById("compartir").onclick = async () => {
-  const url = location.origin + "/", texto = "Combos ACUBAVA con entrega en La Habana. Escoja el suyo aquí:";
+  const url = location.origin + "/" + (V ? "?v=" + V : ""), texto = "Combos ACUBAVA con entrega en La Habana. Escoja el suyo aquí:";
   if (navigator.share) { try { await navigator.share({title: "Ofertas ACUBAVA", text: texto, url}); return; } catch (e) { if (e.name === "AbortError") return; } }
   try { await navigator.clipboard.writeText(url); const a = document.getElementById("aviso"); a.hidden = false; setTimeout(() => a.hidden = true, 2200); }
   catch { window.open("https://wa.me/?text=" + encodeURIComponent(texto + " " + url), "_blank"); }
