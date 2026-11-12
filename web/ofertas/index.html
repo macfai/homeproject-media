@@ -30,11 +30,16 @@ button.combo img{display:block;width:100%;aspect-ratio:2/3;object-fit:cover}
 /* ampliado */
 dialog{border:0;padding:0;background:transparent;max-width:min(560px,94vw);width:100%}
 dialog::backdrop{background:rgba(6,20,55,.82)}
-.caja{background:#fff;border-radius:18px;overflow:hidden;max-height:92vh;display:flex;flex-direction:column}
-.caja img{width:100%;max-height:68vh;object-fit:contain;background:#fff}
+.caja{background:#fff;border-radius:18px;overflow:auto;max-height:92vh;display:flex;flex-direction:column}
+.caja img{width:100%;max-height:52vh;flex-shrink:0;object-fit:contain;background:#fff}
 .acciones{display:grid;gap:8px;padding:12px}
 .acciones a{display:flex;justify-content:center;align-items:center;text-decoration:none;font:800 15px var(--font);padding:13px;border-radius:12px;color:#fff}
-.tienda{background:var(--azul)} .whats{background:var(--wa)} .pagar{background:var(--rojo)}
+.tienda{background:var(--azul)} .whats{background:var(--wa)} .pagar{background:var(--rojo)} .zelle{background:#6d1ed4}
+.acciones a.zelle,.acciones a.pagar{flex-direction:column;gap:2px}
+.acciones small{font:600 12px var(--font);opacity:.9}
+.zbox{border:2px solid #6d1ed4;border-radius:12px;padding:12px;font:600 14px var(--font);color:var(--navy);display:grid;gap:8px}
+.zbox b{font-weight:800}
+.zbox button{all:unset;cursor:pointer;text-align:center;background:#efe6ff;color:#4a12a0;border-radius:10px;padding:10px;font:800 14px var(--font)}
 .cerrar{position:absolute;top:8px;right:8px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.95);color:var(--navy);font:800 22px var(--font);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .rel{position:relative}
 .compartir{position:fixed;left:calc(14px + env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom));background:var(--navy);color:#fff;border:0;font:800 15px var(--font);padding:13px 18px;border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,.25);cursor:pointer}
@@ -68,6 +73,7 @@ dialog::backdrop{background:rgba(6,20,55,.82)}
 
 <script>
 const WA = "17869526500";
+const ZELLE = "macfaibilling@gmail.com";
 const IMG = "https://raw.githubusercontent.com/macfai/homeproject-media/main/web/ofertas/img/";
 // [id, nombre, precio, imagen, producto en acubava.com, link de pago directo (Stripe) cuando exista]
 const COMBOS = [
@@ -97,7 +103,26 @@ function abrir(c){
   document.getElementById("v-img").alt = `Combo ${nombre} ACUBAVA, $${precio} USD`;
   const acc = document.getElementById("v-acc"); acc.innerHTML = "";
   const btn = (cls, txt, href) => { const a = document.createElement("a"); a.className = cls; a.textContent = txt; a.href = href; a.target = "_blank"; a.rel = "noopener"; acc.appendChild(a); };
-  if (pago) btn("pagar", "Pagar ahora con tarjeta", pago);
+  // Zelle: sin recargo
+  const z = document.createElement("a"); z.className = "zelle"; z.href = "#"; z.innerHTML = "Pagar por Zelle<small>Sin recargo</small>";
+  z.onclick = e => {
+    e.preventDefault();
+    if (acc.querySelector(".zbox")) return;
+    const box = document.createElement("div"); box.className = "zbox";
+    box.innerHTML = `<div>Envíe <b>$${precio}</b> por Zelle a <b>${ZELLE}</b> (MACFAI LLC).</div>`;
+    const cp = document.createElement("button"); cp.type = "button"; cp.textContent = "Copiar correo de Zelle";
+    cp.onclick = () => { navigator.clipboard.writeText(ZELLE).then(() => cp.textContent = "Copiado"); };
+    const ok = document.createElement("a"); ok.className = "whats"; ok.target = "_blank"; ok.rel = "noopener"; ok.textContent = "Ya pagué: avisar por WhatsApp";
+    ok.href = wa(`Hola, ya pagué por Zelle el combo ${nombre} de $${precio} para La Habana. El pago sale a nombre de: `);
+    box.append(cp, ok); z.after(box);
+  };
+  acc.appendChild(z);
+  // Tarjeta: con recargo del 3 %
+  const total = (Math.round(parseFloat(precio) * 103) / 100).toFixed(2);
+  const t = document.createElement("a"); t.className = "pagar"; t.target = "_blank"; t.rel = "noopener";
+  t.href = pago || wa(`Hola, quiero pagar con tarjeta el combo ${nombre}: $${total} (incluye recargo del 3%) para La Habana.`);
+  t.innerHTML = `Pagar con tarjeta<small>(Recargo del 3%: $${total})</small>`;
+  acc.appendChild(t);
   btn("whats", "Escribir por WhatsApp", wa(`Hola, quiero el combo ${nombre} de $${precio} para La Habana.`));
   history.replaceState(null, "", location.pathname + location.search + "#" + id);
   vista.showModal();
