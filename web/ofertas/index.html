@@ -94,8 +94,13 @@ try {
   if (q) { V = q; localStorage.setItem("acubava_v", JSON.stringify({v: q, t: Date.now()})); }
   else { const s = JSON.parse(localStorage.getItem("acubava_v") || "null"); if (s && Date.now() - s.t < 60 * 864e5) V = s.v; }
 } catch (e) {}
-const wa = t => `https://wa.me/${WA}?text=${encodeURIComponent(t + (V ? ` (Código ${V})` : ""))}`;
-document.querySelector(".wa-fijo").href = wa("Hola, quiero información de los combos de ACUBAVA");
+// Si lo compartió un vendedor, el cliente le escribe a ese vendedor (a su WhatsApp), no a la oficina
+let DEST = "";
+const wa = t => DEST ? `https://wa.me/${DEST}?text=${encodeURIComponent(t)}`
+                     : `https://wa.me/${WA}?text=${encodeURIComponent(t + (V ? ` (Código ${V})` : ""))}`;
+const fijo = () => document.querySelector(".wa-fijo").href = wa("Hola, quiero información de los combos de ACUBAVA");
+fijo();
+if (V) fetch(`https://finanzas.macfai.com/v/${V}/wa/`).then(r => r.json()).then(d => { if (d.wa) { DEST = d.wa; fijo(); } }).catch(() => {});
 const lista = document.getElementById("lista"), vista = document.getElementById("vista");
 function abrir(c){
   const [id, nombre, precio, img, slug, pago] = c;
