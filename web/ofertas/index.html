@@ -104,7 +104,7 @@ if (V) fetch(`https://finanzas.macfai.com/v/${V}/wa/`).then(r => r.json()).then(
 const lista = document.getElementById("lista"), vista = document.getElementById("vista");
 function abrir(c){
   const [id, nombre, precio, img, slug, pago] = c;
-  document.getElementById("v-img").src = IMG + img + ".jpg";
+  document.getElementById("v-img").src = src(img);
   document.getElementById("v-img").alt = `Combo ${nombre} ACUBAVA, $${precio} USD`;
   const acc = document.getElementById("v-acc"); acc.innerHTML = "";
   const btn = (cls, txt, href) => { const a = document.createElement("a"); a.className = cls; a.textContent = txt; a.href = href; a.target = "_blank"; a.rel = "noopener"; acc.appendChild(a); };
@@ -132,12 +132,26 @@ function abrir(c){
   history.replaceState(null, "", location.pathname + location.search + "#" + id);
   vista.showModal();
 }
-for (const c of COMBOS){
-  const b = document.createElement("button"); b.className = "combo"; b.type = "button";
-  b.setAttribute("aria-label", `Ver combo ${c[1]}, $${c[2]}`);
-  b.innerHTML = `<img src="${IMG}${c[3]}.jpg" alt="Combo ${c[1]} ACUBAVA, $${c[2]} USD" loading="lazy">`;
-  b.addEventListener("click", () => abrir(c)); lista.appendChild(b);
+// La imagen puede ser de las fijas (nombre) o de un combo del Administrador (enlace completo)
+function src(img){ return /^https?:/.test(img) ? img : IMG + img + ".jpg"; }
+function pintar(combos){
+  lista.innerHTML = "";
+  for (const c of combos){
+    const b = document.createElement("button"); b.className = "combo"; b.type = "button";
+    b.setAttribute("aria-label", `Ver combo ${c[1]}, $${c[2]}`);
+    b.innerHTML = `<img src="${src(c[3])}" alt="Combo ${c[1]} ACUBAVA, $${c[2]} USD" loading="lazy">`;
+    b.addEventListener("click", () => abrir(c)); lista.appendChild(b);
+  }
 }
+pintar(COMBOS);
+// Cada Administrador tiene su catálogo: quita los combos que no vende y agrega los suyos (con su imagen)
+if (V) fetch(`https://finanzas.macfai.com/v/${V}/catalogo.json`).then(r => r.json()).then(d => {
+  const fuera = new Set((d.ocultos || []).map(n => n.toLowerCase()));
+  const propios = (d.propios || []).map(p => [p.id, p.nombre, p.precio, p.img, "", ""]);
+  COMBOS.splice(0, COMBOS.length, ...COMBOS.filter(c => !fuera.has(c[1].toLowerCase())), ...propios);
+  pintar(COMBOS);
+  const h = location.hash.slice(1), c = COMBOS.find(x => x[0] === h); if (c && !vista.open) abrir(c);
+}).catch(() => {});
 document.getElementById("cerrar").onclick = () => vista.close();
 vista.addEventListener("click", e => { if (e.target === vista) vista.close(); });
 vista.addEventListener("close", () => history.replaceState(null, "", location.pathname + location.search));
