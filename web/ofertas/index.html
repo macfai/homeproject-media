@@ -6,7 +6,7 @@
 <title>Ofertas ACUBAVA</title>
 <meta name="description" content="Combos de comida y aseo con entrega en La Habana. Pague aquí y lo reciben en casa.">
 <meta property="og:title" content="Ofertas ACUBAVA — Combos con entrega en La Habana">
-<meta property="og:description" content="Escoja su combo y pídalo por WhatsApp o en acubava.com.">
+<meta property="og:description" content="Escoja su combo y pídalo por WhatsApp.">
 <meta property="og:image" content="https://raw.githubusercontent.com/macfai/homeproject-media/main/web/ofertas/img/combo_familiar_esencial.jpg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap">
 <style>
@@ -98,7 +98,6 @@ function abrir(c){
   const acc = document.getElementById("v-acc"); acc.innerHTML = "";
   const btn = (cls, txt, href) => { const a = document.createElement("a"); a.className = cls; a.textContent = txt; a.href = href; a.target = "_blank"; a.rel = "noopener"; acc.appendChild(a); };
   if (pago) btn("pagar", "Pagar ahora con tarjeta", pago);
-  if (slug && !V) btn("tienda", "Comprar en la tienda", `https://acubava.com/products/${slug}`);
   btn("whats", "Escribir por WhatsApp", wa(`Hola, quiero el combo ${nombre} de $${precio} para La Habana.`));
   history.replaceState(null, "", location.pathname + location.search + "#" + id);
   vista.showModal();
