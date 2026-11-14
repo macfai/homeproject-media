@@ -114,7 +114,7 @@ function abrir(c){
     e.preventDefault();
     if (acc.querySelector(".zbox")) return;
     const box = document.createElement("div"); box.className = "zbox";
-    box.innerHTML = `<div>Envíe <b>$${precio}</b> por Zelle a <b>${ZELLE}</b> (MACFAI LLC).</div>`;
+    box.innerHTML = `<div>Envíe <b>$${precio}</b> por Zelle a <b>${ZELLE}</b> (MACFAI LLC).</div><div style="margin-top:6px;font-size:.9em">En la nota del pago ponga solo <b>combo</b>. No escriba Cuba ni nombres de lugares: el banco puede trabar el pago.</div>`;
     const cp = document.createElement("button"); cp.type = "button"; cp.textContent = "Copiar correo de Zelle";
     cp.onclick = () => { navigator.clipboard.writeText(ZELLE).then(() => cp.textContent = "Copiado"); };
     const ok = document.createElement("a"); ok.className = "whats"; ok.target = "_blank"; ok.rel = "noopener"; ok.textContent = "Ya pagué: avisar por WhatsApp";
