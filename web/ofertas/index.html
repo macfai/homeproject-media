@@ -145,10 +145,12 @@ function pintar(combos){
 }
 pintar(COMBOS);
 // Cada Administrador tiene su catálogo: quita los combos que no vende y agrega los suyos (con su imagen)
-if (V) fetch(`https://finanzas.macfai.com/v/${V}/catalogo.json`).then(r => r.json()).then(d => {
+// El catálogo vive en el sistema (Catálogo en finanzas): si responde, manda él; si no, queda la lista de arriba
+fetch(V ? `https://finanzas.macfai.com/v/${V}/catalogo.json` : "https://finanzas.macfai.com/catalogo.json").then(r => r.json()).then(d => {
   const fuera = new Set((d.ocultos || []).map(n => n.toLowerCase()));
+  const base = (d.central && d.central.length) ? d.central.map(p => [p.id, p.nombre, p.precio, p.img, (COMBOS.find(c => c[1].toLowerCase() === p.nombre.toLowerCase()) || [])[4] || "", ""]) : COMBOS.slice();
   const propios = (d.propios || []).map(p => [p.id, p.nombre, p.precio, p.img, "", ""]);
-  COMBOS.splice(0, COMBOS.length, ...COMBOS.filter(c => !fuera.has(c[1].toLowerCase())), ...propios);
+  COMBOS.splice(0, COMBOS.length, ...base.filter(c => !fuera.has(c[1].toLowerCase())), ...propios);
   pintar(COMBOS);
   const h = location.hash.slice(1), c = COMBOS.find(x => x[0] === h); if (c && !vista.open) abrir(c);
 }).catch(() => {});
